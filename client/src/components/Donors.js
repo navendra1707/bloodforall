@@ -18,6 +18,7 @@ const Donors = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [distance, setDistance] = useState(5);
+  const userId = localStorage.getItem('userId');
 
   const coordinates = [location.lng, location.lat];
 
@@ -69,7 +70,8 @@ const Donors = () => {
     });
 
     const data = await res.json();
-    setUsers(data.users);
+    const filterUsers = data.users.filter(user => user.userId !== userId);
+    setUsers(filterUsers);
     setLoading(false);
   };
 

@@ -118,7 +118,7 @@ const Register = (props) => {
     await addDoc(collection(db, "users"), user)
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     const user = {
       userId: userId,
@@ -137,17 +137,18 @@ const Register = (props) => {
       hasAids: aids,
       hasChildBirth: child,
     };
-    const q = query(collection(db, "users"), where("phone", "==", phone))
-    const check = async () => {
-      const querySnapshot = await getDocs(q);
-      return !querySnapshot;
-    }
-    if(!check()){
-      setErrorText('User already exists, please try another phone number.')
-      return;
-    }
-    console.log(user);
-    dispatch(setUser(user));
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/register`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await res.json();
+
+    console.log(data.user);
+    dispatch(setUser(data.user));
     if (!verify) {
       setErrorText('Please verify Phone number first.');
       return;

@@ -118,18 +118,24 @@ const Register = (props) => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    const q = query(collection(db, "users"), where("userId", "==", userId))
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot) {
-      const data = querySnapshot.docs.map(u => ({...u.data()}))
-      dispatch(setUser(data[0]))
-      console.log(user)
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: userId
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      dispatch(setUser(data.user))
       navigate('/home');
       return;
     }
 
-    if (!verify && !querySnapshot) {
+    if (!verify) {
       setErrorText("Please verify Mobile Number first");
       return;
     }
